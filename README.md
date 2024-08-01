@@ -1,4 +1,4 @@
-# idkr
+# idkr fork but modified for m1
 [![Discord server](https://discord.com/api/guilds/697366856914173994/widget.png)](https://discord.gg/wEZbFFX)
 
 idk, just a Krunker client 
