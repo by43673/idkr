@@ -23,7 +23,6 @@ let cliSwitchHandler = function(app, config) {
 		app.commandLine.appendSwitch("disable-frame-rate-limit");
 		app.commandLine.appendSwitch("disable-gpu-vsync");
 		app.commandLine.appendSwitch('disable-features', 'UsePreferredIntervalForVideo');
-		app.commandLine.appendSwitch('disable-blink-features', 'ExperimentalIsInputPending');
 	}
 	if (config.get("inProcessGPU", false)) app.commandLine.appendSwitch("in-process-gpu");
 	if (angleBackend !== "default") app.commandLine.appendSwitch("use-angle", angleBackend);
