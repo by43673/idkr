@@ -14,9 +14,10 @@ let cliSwitchHandler = function(app, config) {
 	const colorProfile = /** @type {string} */ (config.get("colorProfile", "default"));
 
 	app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
-	app.commandLine.appendSwitch('enable-gpu-rasterization');
-	app.commandLine.appendSwitch('enable-oop-rasterization');
-	app.commandLine.appendSwitch('disable-zero-copy');
+	app.commandLine.appendSwitch('enable-features', 'BlinkCompositorUseDisplayThreadPriority');
+	app.commandLine.appendSwitch('enable-features', 'GpuUseDisplayThreadPriority');
+	app.commandLine.appendSwitch('enable-features', 'DefaultPassthroughCommandDecoder');
+	app.commandLine.appendSwitch('enable-features', 'CanvasOopRasterization');
 
 	if (!config.get("acceleratedCanvas", true)) app.commandLine.appendSwitch("disable-accelerated-2d-canvas", "true");
 	if (config.get("disableFrameRateLimit", true)) {
