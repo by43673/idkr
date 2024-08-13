@@ -10,30 +10,48 @@ let yargs = require("yargs");
  * @param {import("electron-store")} config
  */
 let cliSwitchHandler = function(app, config) {
-	const angleBackend = /** @type {string} */ (config.get("angleBackend", "default"));
-	const colorProfile = /** @type {string} */ (config.get("colorProfile", "default"));
+    const flags = [
+        ['disable-frame-rate-limit', null, config.get('unlimitedFPS', true)],
+        ['disable-gpu-vsync', null, config.get('unlimitedFPS', true)],
+        ['max-gum-fps', '9999', config.get('unlimitedFPS', true)],
+        ['disable-features', 'UsePreferredIntervalForVideo', config.get('unlimitedFPS', true)],
+        ['use-cmd-decoder', 'passthrough', config.get('unlimitedFPS', true)],
+        ['enable-features', 'BlinkCompositorUseDisplayThreadPriority', config.get('unlimitedFPS', true)],
+        ['enable-features', 'GpuUseDisplayThreadPriority', config.get('unlimitedFPS', true)],
+        ['use-angle', config.get('angleType', 'default'), true],
+        ['in-process-gpu', null, process.platform === 'win32'],
+        ['autoplay-policy', 'no-user-gesture-required', config.get('autoPlay', true)],
+        ['disable-accelerated-2d-canvas', 'true', !config.get('acceleratedCanvas', true)],
+    ];
 
-	app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
-	app.commandLine.appendSwitch('enable-features', 'BlinkCompositorUseDisplayThreadPriority');
-	app.commandLine.appendSwitch('enable-features', 'GpuUseDisplayThreadPriority');
-	app.commandLine.appendSwitch('enable-features', 'DefaultPassthroughCommandDecoder');
-	app.commandLine.appendSwitch('enable-features', 'CanvasOopRasterization');
+    // Apply all the flags
+    flags.forEach(([flag, value, condition]) => {
+        if (condition) {
+            if (value) {
+                app.commandLine.appendSwitch(flag, value);
+            } else {
+                app.commandLine.appendSwitch(flag);
+            }
+        }
+    });
 
-	if (!config.get("acceleratedCanvas", true)) app.commandLine.appendSwitch("disable-accelerated-2d-canvas", "true");
-	if (config.get("disableFrameRateLimit", true)) {
-		app.commandLine.appendSwitch("disable-frame-rate-limit");
-		app.commandLine.appendSwitch("disable-gpu-vsync");
-		app.commandLine.appendSwitch('disable-features', 'UsePreferredIntervalForVideo');
-	}
-	if (config.get("inProcessGPU", false)) app.commandLine.appendSwitch("in-process-gpu");
-	if (angleBackend !== "default") app.commandLine.appendSwitch("use-angle", angleBackend);
-	if (colorProfile !== "default") app.commandLine.appendSwitch("force-color-profile", colorProfile);
+    const angleBackend = /** @type {string} */ (config.get("angleBackend", "default"));
+    const colorProfile = /** @type {string} */ (config.get("colorProfile", "default"));
 
-	yargs.parse(
-		/** @type {string} */
-		(config.get("chromiumFlags", "")),
-		(_, argv) => Object.entries(argv).slice(1, -1).forEach(entry => app.commandLine.appendSwitch(entry[0], entry[1]))
-	);
+    if (angleBackend !== "default") {
+        app.commandLine.appendSwitch("use-angle", angleBackend);
+    }
+
+    if (colorProfile !== "default") {
+        app.commandLine.appendSwitch("force-color-profile", colorProfile);
+    }
+
+    // Apply custom chromium flags via yargs
+    yargs.parse(
+        /** @type {string} */
+        (config.get("chromiumFlags", "")),
+        (_, argv) => Object.entries(argv).slice(1, -1).forEach(entry => app.commandLine.appendSwitch(entry[0], entry[1]))
+    );
 };
 
 module.exports = cliSwitchHandler;
