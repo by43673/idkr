@@ -1,3 +1,4 @@
+
 "use strict";
 
 require("v8-compile-cache");
@@ -27,23 +28,7 @@ let userscriptsDirConfig = (config.get("userscriptsPath", ""));
 const userscriptsDir = PathUtils.isValidPath(userscriptsDirConfig) ? userscriptsDirConfig : path.join(app.getPath("documents"), "idkr/scripts");
 cliSwitches(app, config);
 
-if (process.platform === "win32") {
-	app.setUserTasks([{
-		program: process.execPath,
-		arguments: "--new-window=https://krunker.io/",
-		title: "New game window",
-		description: "Opens a new game window",
-		iconPath: process.execPath,
-		iconIndex: 0
-	}, {
-		program: process.execPath,
-		arguments: "--new-window=https://krunker.io/social.html",
-		title: "New social window",
-		description: "Opens a new social window",
-		iconPath: process.execPath,
-		iconIndex: 0
-	}]);
-}
+app.userAgentFallback = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Electron/10.4.7 Safari/537.36';
 
 let init = function() {
 	// Workaround for Electron 8.x
